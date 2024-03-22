@@ -5,6 +5,9 @@ import com.springboot.blog.exception.ResourceNotFoundException;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,24 +34,27 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
+    public List<PostDto> getAllPosts(int pageNo, int pageSize) {
 
-        List<Post> posts = postRepository.findAll();
-         posts.stream().map(post -> mapToDTO(post)).collect(Collectors.toList());
-        System.out.println("aaa");
-         return posts.stream().map(post -> mapToDTO(post)).collect(Collectors.toList());
+        // create pageable instance
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Post> posts = postRepository.findAll(pageable);
+
+        List<Post> listOfPosts = posts.getContent();
+
+        return listOfPosts.stream().map(post -> mapToDTO(post)).collect(Collectors.toList());
     }
 
     @Override
     public PostDto getPostById(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post","id",id));
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
         return mapToDTO(post);
     }
 
     @Override
     public PostDto updatePost(PostDto postDto, Long id) {
         // get post by id from the data
-        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post","id",id));
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
 
         post.setTitle(postDto.getTitle());
         post.setDescription(postDto.getDescription());
@@ -56,6 +62,14 @@ public class PostServiceImpl implements PostService {
 
         Post updatePost = postRepository.save(post);
         return mapToDTO(updatePost);
+    }
+
+    @Override
+    public void deletePostById(Long id) {
+        // get post by id from the data
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+        postRepository.delete(post);
+
     }
 
     //convert entity to DTO
