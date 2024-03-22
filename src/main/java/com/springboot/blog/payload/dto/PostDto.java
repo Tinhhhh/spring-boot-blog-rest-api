@@ -1,4 +1,4 @@
-package com.springboot.blog.payload;
+package com.springboot.blog.payload.dto;
 
 import lombok.Data;
 
