@@ -1,14 +1,12 @@
 package com.springboot.blog.controller;
 
-import com.springboot.blog.payload.dto.PostDto;
-import com.springboot.blog.payload.responseModel.PostResponse;
+import com.springboot.blog.model.payload.dto.PostDto;
+import com.springboot.blog.model.payload.responseModel.PostResponse;
 import com.springboot.blog.service.PostService;
 import com.springboot.blog.utils.AppConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")

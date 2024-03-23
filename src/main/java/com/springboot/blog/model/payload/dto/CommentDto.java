@@ -1,4 +1,4 @@
-package com.springboot.blog.payload.dto;
+package com.springboot.blog.model.payload.dto;
 
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
