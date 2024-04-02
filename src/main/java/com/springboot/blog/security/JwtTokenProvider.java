@@ -70,4 +70,18 @@ public class JwtTokenProvider {
             throw new BlogAPIException(HttpStatus.BAD_REQUEST, "JWT claims string is empty");
         }
     }
+
+    public boolean isTokenValid(String token, String checkUsername) {
+        final String username = getUsername(token);
+        return (username.equals(checkUsername) && !isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getExpiration().before(new Date());
+    }
 }

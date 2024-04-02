@@ -1,5 +1,7 @@
 package com.springboot.blog.security;
 
+import com.springboot.blog.model.entity.AccessToken;
+import com.springboot.blog.repository.AccessTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,10 +22,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private JwtTokenProvider jwtTokenProvider;
     private UserDetailsService userDetailsService;
+    private AccessTokenRepository accessTokenRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
+                                   UserDetailsService userDetailsService,
+                                   AccessTokenRepository accessTokenRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailsService = userDetailsService;
+        this.accessTokenRepository = accessTokenRepository;
     }
 
     @Override
@@ -31,25 +37,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             , HttpServletResponse response
             , FilterChain filterChain) throws ServletException, IOException {
 
+        //check if BearerToken and return token
         String token = getTokenFromRequest(request);
 
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             String username = jwtTokenProvider.getUsername(token);
 
+            // load the user associated with the username from token
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
+            AccessToken accessToken = accessTokenRepository.findByToken(token);
 
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            if (jwtTokenProvider.isTokenValid(token, userDetails.getUsername())
+                    && accessToken != null
+                    && !accessToken.isRevoked()
+                    && !accessToken.isExpired()
+            ) {
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
 
     }
 
@@ -61,4 +76,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
 }
