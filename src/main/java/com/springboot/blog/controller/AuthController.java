@@ -4,6 +4,8 @@ import com.springboot.blog.model.payload.dto.LoginDto;
 import com.springboot.blog.model.payload.dto.RegisterDto;
 import com.springboot.blog.model.payload.responseModel.JWTAuthResponse;
 import com.springboot.blog.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +35,12 @@ public class AuthController {
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
         String response = authService.register(registerDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/refresh-token")
+    public ResponseEntity<JWTAuthResponse> refreshToken(HttpServletRequest request,
+                                                        HttpServletResponse response) {
+        return ResponseEntity.ok(authService.refreshToken(request, response));
     }
 
 }

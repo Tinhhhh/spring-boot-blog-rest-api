@@ -11,6 +11,6 @@ import lombok.*;
 public class JWTAuthResponse {
     @JsonProperty("access_token")
     private String accessToken;
-//    @JsonProperty("refresh_token")
-//    private String refreshToken;
+    @JsonProperty("refresh_token")
+    private String refreshToken;
 }

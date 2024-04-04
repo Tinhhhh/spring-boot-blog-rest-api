@@ -3,17 +3,19 @@ package com.springboot.blog.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "access_tokens")
-public class AccessToken {
+@Table(name = "refresh_tokens")
+public class RefreshToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String token;
 
@@ -21,12 +23,6 @@ public class AccessToken {
 
     private boolean revoked;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "refresh_tokens_id")
-    private RefreshToken refreshToken;
-
+    @OneToMany(mappedBy = "refreshToken", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AccessToken> accessToken;
 }

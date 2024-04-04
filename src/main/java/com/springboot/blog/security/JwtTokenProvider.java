@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -19,14 +18,29 @@ public class JwtTokenProvider {
     @Value("${app.jwt-secret}")
     private String jwtSecret;
 
-    @Value("${app-jwt-expiration-milliseconds}")
-    private Long jwtExpirationDate;
+    @Value("${app.jwt-access-expiration-milliseconds}")
+    private Long jwtAccessExpiration;
+
+    @Value("${app.jwt-refresh-expiration-milliseconds}")
+    private Long jwtRefreshExpiration;
+
+    // generate accessToken
+    public String generateAccessToken(Authentication authentication) {
+        String token = generateToken(authentication, jwtAccessExpiration);
+        return token;
+    }
+
+    // generate refreshToken
+    public String generateRefreshToken(Authentication authentication) {
+        String token = generateToken(authentication, jwtRefreshExpiration);
+        return token;
+    }
 
     // generate JWT token
-    public String generateToken(Authentication authentication) {
+    public String generateToken(Authentication authentication, Long expiration) {
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date expiredDate = new Date(currentDate.getTime() + jwtExpirationDate);
+        Date expiredDate = new Date(currentDate.getTime() + expiration);
 
         String token = Jwts.builder()
                 .setSubject(username)
