@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentDto {
     private long id;
+
     @NotEmpty(message = "Name should not be null or empty")
     private String name;
 

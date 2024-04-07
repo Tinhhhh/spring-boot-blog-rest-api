@@ -17,6 +17,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     private String token;
 
     private boolean expired;

@@ -1,6 +1,7 @@
 package com.springboot.blog.model.payload.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -20,7 +21,10 @@ public class PostDto {
     @Size(min = 10, message = "Post description should have at least 10 characters")
     private String description;
 
-    @NotEmpty
+    @NotEmpty(message = "content should not be null or empty")
     private String content;
     private Set<CommentDto> comments;
+
+    @NotNull(message = "Category ID should not be null")
+    private Long categoryId;
 }
