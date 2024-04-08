@@ -3,6 +3,9 @@ package com.springboot.blog.controller;
 import com.springboot.blog.model.entity.Category;
 import com.springboot.blog.model.payload.dto.CategoryDto;
 import com.springboot.blog.service.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
+@Tag(
+        name = "CRUD REST APIs for Category Resource"
+)
 public class CategoryController {
     private CategoryService categoryService;
 
@@ -21,8 +27,9 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "Bear Authentication")
     @PostMapping
-    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> addCategory(@Valid @RequestBody CategoryDto categoryDto) {
         CategoryDto categoryResponse = categoryService.addCategory(categoryDto);
         return new ResponseEntity<>(categoryResponse, HttpStatus.CREATED);
     }
@@ -39,13 +46,15 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "Bear Authentication")
     @PutMapping("{id}")
     public ResponseEntity<CategoryDto> updateCategory(@PathVariable(value = "id") Long categoryId,
-                                                      @RequestBody CategoryDto categoryDto) {
+                                                      @Valid @RequestBody CategoryDto categoryDto) {
         return ResponseEntity.ok(categoryService.updateCategory(categoryDto, categoryId));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "Bear Authentication")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable(value = "id") Long categoryId) {
         categoryService.deleteCategory(categoryId);
