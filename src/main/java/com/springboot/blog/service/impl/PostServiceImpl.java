@@ -8,6 +8,7 @@ import com.springboot.blog.model.payload.responseModel.PostResponse;
 import com.springboot.blog.repository.CategoryRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.PostService;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,19 +20,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     private CategoryRepository categoryRepository;
     private ModelMapper modelMapper;
 
-    public PostServiceImpl(PostRepository postRepository,
-                           CategoryRepository categoryRepository,
-                           ModelMapper modelMapper) {
-
-        this.postRepository = postRepository;
-        this.categoryRepository = categoryRepository;
-        this.modelMapper = modelMapper;
-    }
+//    public PostServiceImpl(PostRepository postRepository,
+//                           CategoryRepository categoryRepository,
+//                           ModelMapper modelMapper) {
+//
+//        this.postRepository = postRepository;
+//        this.categoryRepository = categoryRepository;
+//        this.modelMapper = modelMapper;
+//    }
 
 
     @Override

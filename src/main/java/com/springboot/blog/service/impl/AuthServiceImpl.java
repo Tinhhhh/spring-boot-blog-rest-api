@@ -1,7 +1,6 @@
 package com.springboot.blog.service.impl;
 
 import com.springboot.blog.exception.BlogAPIException;
-import com.springboot.blog.exception.ResourceNotFoundException;
 import com.springboot.blog.model.entity.AccessToken;
 import com.springboot.blog.model.entity.RefreshToken;
 import com.springboot.blog.model.entity.Role;
@@ -72,6 +71,9 @@ public class AuthServiceImpl implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = userRepository.findByUsernameOrEmail(loginDto.getUsernameOrEmail(), loginDto.getUsernameOrEmail())
                 .orElseThrow(() -> new BlogAPIException(HttpStatus.BAD_REQUEST, "User not found"));
+        if (!user.isEnabled()) {
+            throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Account is not Enabled");
+        }
 
         String accessToken = jwtTokenProvider.generateAccessToken(authentication);
         String refreshToken = jwtTokenProvider.generateRefreshToken(authentication);
@@ -102,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = modelMapper.map(registerDto, User.class);
-
+        user.setEnabled(false);
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
         Set<Role> roles = new HashSet<>();
@@ -112,7 +114,7 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        return "User register successfully.";
+        return "We sent you email to active your account. Please check ";
     }
 
     @Override
